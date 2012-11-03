@@ -1,6 +1,9 @@
 # -*- coding: utf8 -*-
 
 import socket
+import threading
+import functools
+from message_handler import MessageHandler
 
 import logging
 logging.basicConfig()
@@ -27,10 +30,13 @@ class IrcBot:
             
         while True:
             server_response = get_server_response()
-            self._handle_server_response(server_response)
+            handle_thread = threading.Thread(target=functools.partial(self._handle_server_response, server_response)) 
+            handle_thread.start()
 
     def _handle_server_response(self, response):
-        logger.debug("got response %s" % response)
+        message_handler = MessageHandler()
+        message_handler.handle(response)
+
 
 if __name__ == '__main__':
     ircbot = IrcBot()
