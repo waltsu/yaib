@@ -17,7 +17,8 @@ class IrcBot:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, host, port, ircname):
-        logger.info("settings bot's ircname to {ircname}".format(ircname=ircname))
+        logger.info("setting bot's ircname to {ircname}".format(ircname=ircname))
+        self._ircname = ircname
         logger.info("connecting to %s:%s" % (host, port))
         self._socket.connect((host, port))
         logger.info("connected")
