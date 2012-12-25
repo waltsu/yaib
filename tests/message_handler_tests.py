@@ -25,3 +25,8 @@ class MessageHandlerTests(unittest.TestCase):
         response = handler.handle(test_message)
         self.assertTrue(m_mode.called)
 
+    def test_end_of_motd(self):
+        test_message = ':servercentral.il.us.quakenet.org 376 yaib :End of /MOTD command.'
+        handler = MessageHandler()
+        response = handler.handle(test_message)
+        self.assertEquals(response['action'], 'logged_in')
