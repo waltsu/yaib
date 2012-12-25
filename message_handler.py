@@ -14,6 +14,7 @@ class MessageHandler():
         self._handlers = {'notice': self.handle_notice,
                           'ping': self.handle_ping,
                           'mode': self.handle_mode,
+                          'privmsg': self.handle_priv_msg,
                           '376': self.handle_end_of_motd}
 
     """
@@ -26,9 +27,9 @@ class MessageHandler():
     def handle(self, raw_message):
         try:
             parsed_message = self.parse(raw_message)
-            message = parsed_message['message'].lower()
+            message = parsed_message['type'].lower()
             try:
-                return self._handlers[message](parsed_message['content'])
+                return self._handlers[message](parsed_message)
             except KeyError:
                 logger.info('{message} not implemented yet'.format(message=message))
         except UnknowInputException:
@@ -38,18 +39,20 @@ class MessageHandler():
     def parse(self, message):
         logger.debug("Parsing message: {message}".format(message=message))
         if message.startswith(':'):
-            pattern = re.compile(':.+?\s(.+?)\s(.+?)\s?(.*)')
+            pattern = re.compile(':(.+?)\s(.+?)\s(.+?)\s(.*)')
         else:
             pattern = re.compile('(.+)\s:(.*)')
 
         result = re.search(pattern, message)
         if result:
             parsed_message = dict()
-            parsed_message['message'] = result.group(1)
-            if len(result.groups()) == 3:
-                parsed_message['channel'] = result.group(2)
-                parsed_message['content'] = result.group(3)
+            if len(result.groups()) == 4:
+                parsed_message['server'] = result.group(1)
+                parsed_message['type'] = result.group(2)
+                parsed_message['channel'] = result.group(3)
+                parsed_message['content'] = result.group(4)
             else:
+                parsed_message['type'] = result.group(1)
                 parsed_message['content'] = result.group(2)
 
             return parsed_message
@@ -58,11 +61,11 @@ class MessageHandler():
 
     # HANDLERS
     def handle_notice(self, message):
-        logger.info("Got notice {notice}".format(notice=message))
+        logger.info("Got notice {notice}".format(notice=message['content']))
 
     def handle_ping(self, message):
         return_data = {}
-        return_data['data'] = 'PONG :{ping}'.format(ping=message)
+        return_data['data'] = 'PONG :{ping}'.format(ping=message['content'])
         return_data['action'] = 'to_server'
         return return_data
 
@@ -71,3 +74,6 @@ class MessageHandler():
 
     def handle_end_of_motd(self, message):
         return {'action': 'logged_in', 'data': ''}
+
+    def handle_priv_msg(self, message):
+        logger.info("Got priv {msg}".format(msg=message))

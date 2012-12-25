@@ -60,8 +60,6 @@ class IrcBot:
                 for channel in settings.CHANNELS:
                     self._send_to_server("JOIN {channel}".format(channel=channel))
 
-
-
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:

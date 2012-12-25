@@ -30,3 +30,11 @@ class MessageHandlerTests(unittest.TestCase):
         handler = MessageHandler()
         response = handler.handle(test_message)
         self.assertEquals(response['action'], 'logged_in')
+
+    @patch.object(MessageHandler, 'handle_priv_msg')
+    def test_privmsg(self, m_priv_msg):
+        test_message = ':Waltsu!vavirta@linux.utu.fi PRIVMSG #testserver :uujee'
+        handler = MessageHandler()
+        response = handler.handle(test_message)
+        self.assertTrue(m_priv_msg.called)
+
