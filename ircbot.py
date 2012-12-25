@@ -17,11 +17,19 @@ class IrcBot:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, host, port, ircname):
+        def login_to_server():
+            logger.info("Logging to server with username: {user}".format(user=self._ircname))
+            self._send_to_server("NICK {nick}".format(nick=self._ircname))
+            self._send_to_server("USER {nick} 8 * : Yet another Ircbot".format(nick=self._ircname))
+
         logger.info("setting bot's ircname to {ircname}".format(ircname=ircname))
         self._ircname = ircname
         logger.info("connecting to %s:%s" % (host, port))
         self._socket.connect((host, port))
         logger.info("connected")
+
+        login_to_server()
+
         self._response_loop()
 
     def _response_loop(self):
@@ -37,9 +45,15 @@ class IrcBot:
             handle_thread = threading.Thread(target=functools.partial(self._handle_server_response, server_response))
             handle_thread.start()
 
+    def _send_to_server(self, data):
+        self._socket.sendall(data + '\r\n')
+        logger.debug("Sent data: {data}".format(data=data))
+
     def _handle_server_response(self, response):
         message_handler = MessageHandler()
-        message_handler.handle(response)
+        response = message_handler.handle(response)
+        if response:
+            self._send_to_server(response)
 
 
 if __name__ == '__main__':
