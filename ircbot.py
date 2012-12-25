@@ -53,7 +53,13 @@ class IrcBot:
         message_handler = MessageHandler()
         response = message_handler.handle(response)
         if response:
-            self._send_to_server(response)
+            if response['action'] is 'to_server':
+                self._send_to_server(response['data'])
+            if response['action'] is 'logged_in':
+                # Join to servers
+                for channel in settings.CHANNELS:
+                    self._send_to_server("JOIN {channel}".format(channel=channel))
+
 
 
 if __name__ == '__main__':

@@ -13,8 +13,16 @@ class MessageHandler():
     def __init__(self):
         self._handlers = {'notice': self.handle_notice,
                           'ping': self.handle_ping,
-                          'mode': self.handle_mode}
+                          'mode': self.handle_mode,
+                          '376': self.handle_end_of_motd}
 
+    """
+    Return value of this function must be either None or dictionary with action and data attributes.
+
+    Action types:
+    to_server => send data to server
+    logged_in => message that indicates that service has accept our login attempt
+    """
     def handle(self, raw_message):
         try:
             parsed_message = self.parse(raw_message)
@@ -28,9 +36,6 @@ class MessageHandler():
             return;
 
     def parse(self, message):
-        """
-        This might need some adjusting, when handling more complex messages. The regex and message-content pair might not be enough
-        """
         logger.debug("Parsing message: {message}".format(message=message))
         if message.startswith(':'):
             pattern = re.compile(':.+?\s(.+?)\s(.+?)\s?(.*)')
@@ -56,7 +61,13 @@ class MessageHandler():
         logger.info("Got notice {notice}".format(notice=message))
 
     def handle_ping(self, message):
-        return 'PONG :{ping}'.format(ping=message)
+        return_data = {}
+        return_data['data'] = 'PONG :{ping}'.format(ping=message)
+        return_data['action'] = 'to_server'
+        return return_data
 
     def handle_mode(self, message):
         pass
+
+    def handle_end_of_motd(self, message):
+        return {'action': 'logged_in', 'data': ''}
