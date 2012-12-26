@@ -5,6 +5,7 @@ logger = logging.getLogger('ircbot')
 logger.setLevel(logging.DEBUG)
 
 import re
+import settings
 
 class UnknowInputException(Exception):
     pass
@@ -16,6 +17,11 @@ class MessageHandler():
                           'mode': self.handle_mode,
                           'privmsg': self.handle_priv_msg,
                           '376': self.handle_end_of_motd}
+
+        self._script_modules = []
+        for module in settings.SCRIPT_MODULES:
+            self._script_modules.append(__import__(module,fromlist=['']))
+            
 
     """
     Return value of this function must be either None or dictionary with action and data attributes.
