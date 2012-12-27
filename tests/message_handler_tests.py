@@ -31,7 +31,7 @@ class MessageHandlerTests(unittest.TestCase):
         test_message = ':servercentral.il.us.quakenet.org 376 yaib :End of /MOTD command.'
         handler = MessageHandler()
         response = handler.handle(test_message)
-        self.assertEquals(response['action'], 'logged_in')
+        self.assertEquals(response['data'], 'logged_in')
 
     @patch.object(MessageHandler, '_handle_priv_msg')
     def test_privmsg(self, m_priv_msg):
@@ -44,15 +44,16 @@ class MessageHandlerTests(unittest.TestCase):
         test_message = ':servercentral.il.us.quakenet.org 433 * Waltsu :Nickname is already in use.'
         handler = MessageHandler()
         response = handler.handle(test_message)
-        self.assertEquals(response['action'], 'nickname_already_in_use')
+        self.assertEquals(response['data'], 'nickname_already_in_use')
 
     @patch.object(test_script, 'on_priv_message')
     def test_script_calling(self, m_on_priv_message):
         handler = MessageHandler()
-        handler._call_script_handlers('on_priv_message', message="some message")
+        handler._call_script_modules('on_priv_message', message="some message")
         m_on_priv_message.assert_called_with(message="some message")
 
     def test_script_error_handling(self):
         handler = MessageHandler()
-        handler._call_script_handlers('raise_error', message="some message")
+        # If not handled correctly, raise_error will raise exception
+        handler._call_script_modules('raise_error', message="some message")
 

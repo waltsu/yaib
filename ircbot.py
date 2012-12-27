@@ -50,18 +50,25 @@ class IrcBot:
         logger.debug("Sent data: {data}".format(data=data))
 
     def _handle_server_response(self, response):
+        def react_info(data):
+            if data is 'logged_in':
+                # Join to servers
+                for channel in settings.CHANNELS:
+                    self._send_to_server("JOIN {channel}".format(channel=channel))
+            elif data is 'nickname_already_in_use':
+                logger.error('Nickname already in use')
+                raise RuntimeError('Nickname already in use')
+
+        def react_to_server(data):
+            self._send_to_server(response['data'])
+
         message_handler = MessageHandler()
         response = message_handler.handle(response)
         if response:
             if response['action'] is 'to_server':
-                self._send_to_server(response['data'])
-            if response['action'] is 'logged_in':
-                # Join to servers
-                for channel in settings.CHANNELS:
-                    self._send_to_server("JOIN {channel}".format(channel=channel))
-            elif response['action'] is 'nickname_already_in_use':
-                logger.error('Nickname already in use')
-                raise RuntimeError('Nickname already in use')
+                react_to_server(response['data'])
+            if response['action'] is 'info':
+                react_info(response['data']) 
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:

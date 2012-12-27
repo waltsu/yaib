@@ -11,6 +11,9 @@ class UnknowInputException(Exception):
     pass
 
 class MessageHandler():
+    """
+    Class that handles messages from ircbot
+    """
     def __init__(self):
         self._handlers = {'notice': self._handle_notice,
                           'ping': self._handle_ping,
@@ -24,17 +27,16 @@ class MessageHandler():
             self._script_modules.append(__import__(module,fromlist=['']))
             
 
-    """
-    Return value of this function must be either None or dictionary with action and data attributes.
-
-    Action types:
-    to_server => send data to server
-    logged_in => message that indicates that service has accept our login attempt
-    nickname_already_in_use => Bot tried to login with the nickname that was already in us
-    """
     def handle(self, raw_message):
+        """
+        Function that handles incoming message. The return value of this function is either None or dictionary with action and data attributes. Action tells to caller what to do with data.
+
+        Current action types:
+        to_server: send data-attribute to server
+        info: Something happened that caller might want to know
+        """
         try:
-            parsed_message = self.parse(raw_message)
+            parsed_message = self._parse(raw_message)
             message = parsed_message['type'].lower()
             try:
                 return self._handlers[message](parsed_message)
@@ -44,7 +46,7 @@ class MessageHandler():
             logger.info('Got unknown input: {message}'.format(message=raw_message))
             return;
 
-    def parse(self, message):
+    def _parse(self, message):
         logger.debug("Parsing message: {message}".format(message=message))
         if message.startswith(':'):
             pattern = re.compile(':(.+?)\s(.+?)\s(.+?)\s(.*)')
@@ -67,7 +69,7 @@ class MessageHandler():
         else:
             raise UnknowInputException
 
-    def _call_script_handlers(self, func, **kwargs):
+    def _call_script_modules(self, func, **kwargs):
         for module in self._script_modules:
             try:
                 callable_function = getattr(module,func)
@@ -95,7 +97,7 @@ class MessageHandler():
         pass
 
     def _handle_end_of_motd(self, message):
-        return {'action': 'logged_in', 'data': ''}
+        return {'action': 'info', 'data': 'logged_in'}
 
     def _handle_priv_msg(self, message):
         script_message = {'content': message['content'].strip(),
@@ -103,7 +105,7 @@ class MessageHandler():
                           'channel': message['channel']}
         
         logger.info("Got priv {msg}".format(msg=message))
-        self._call_script_handlers('on_priv_message', message=script_message)
+        self._call_script_modules('on_priv_message', message=script_message)
 
     def _handle_nickname_already_in_use(self, message):
-        return {'action': 'nickname_already_in_use', 'data': ''}
+        return {'action': 'info', 'data': 'nickname_already_in_use'}
