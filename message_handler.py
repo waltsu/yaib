@@ -67,6 +67,20 @@ class MessageHandler():
         else:
             raise UnknowInputException
 
+    def _call_script_handlers(self, func, **kwargs):
+        for module in self._script_modules:
+            try:
+                callable_function = getattr(module,func)
+                if callable(callable_function):
+                    try:
+                        callable_function(**kwargs)
+                    except Exception as e:
+                        logger.error("Script {module} raised error: {error}".format(module=module, error=e))
+                else:
+                    logger.debug("Script module {module} {function} isn't callable".format(module=module, function=func))
+            except AttributeError:
+                logger.debug("Script module {module} doesn't have method {function}".format(module=module, function=func))
+
     # HANDLERS
     def _handle_notice(self, message):
         logger.info("Got notice {notice}".format(notice=message['content']))
@@ -84,7 +98,12 @@ class MessageHandler():
         return {'action': 'logged_in', 'data': ''}
 
     def _handle_priv_msg(self, message):
+        script_message = {'content': message['content'].strip(),
+                          'nick': message['server'].split('!')[0],
+                          'channel': message['channel']}
+        
         logger.info("Got priv {msg}".format(msg=message))
+        self._call_script_handlers('on_priv_message', message=script_message)
 
     def _handle_nickname_already_in_use(self, message):
         return {'action': 'nickname_already_in_use', 'data': ''}

@@ -4,6 +4,8 @@ from mock import patch
 
 from yaib.message_handler import MessageHandler
 
+from scripts import test_script
+
 class MessageHandlerTests(unittest.TestCase):
     @patch.object(MessageHandler, "_handle_notice")
     def test_notice_parsing(self, m_notice):
@@ -43,3 +45,14 @@ class MessageHandlerTests(unittest.TestCase):
         handler = MessageHandler()
         response = handler.handle(test_message)
         self.assertEquals(response['action'], 'nickname_already_in_use')
+
+    @patch.object(test_script, 'on_priv_message')
+    def test_script_calling(self, m_on_priv_message):
+        handler = MessageHandler()
+        handler._call_script_handlers('on_priv_message', message="some message")
+        m_on_priv_message.assert_called_with(message="some message")
+
+    def test_script_error_handling(self):
+        handler = MessageHandler()
+        handler._call_script_handlers('raise_error', message="some message")
+
