@@ -33,11 +33,7 @@ class MessageHandler():
 
     def handle(self, raw_message):
         """
-        Function that handles incoming message. The return value of this function is either None or dictionary with action and data attributes. Action tells to caller what to do with data.
-
-        Current action types:
-        to_server: send data-attribute to server
-        info: Something happened that caller might want to know
+        Function that handles incoming message. The return value is IrcEvent instance which is modified by handlers. Handlers has modified the event so that caller should know what to do
         """
         try:
             parsed_message = self._parse(raw_message)
