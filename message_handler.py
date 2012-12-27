@@ -16,7 +16,8 @@ class MessageHandler():
                           'ping': self.handle_ping,
                           'mode': self.handle_mode,
                           'privmsg': self.handle_priv_msg,
-                          '376': self.handle_end_of_motd}
+                          '376': self.handle_end_of_motd,
+                          '433': self.handle_nickname_already_in_use}
 
         self._script_modules = []
         for module in settings.SCRIPT_MODULES:
@@ -29,6 +30,7 @@ class MessageHandler():
     Action types:
     to_server => send data to server
     logged_in => message that indicates that service has accept our login attempt
+    nickname_already_in_use => Bot tried to login with the nickname that was already in us
     """
     def handle(self, raw_message):
         try:
@@ -83,3 +85,6 @@ class MessageHandler():
 
     def handle_priv_msg(self, message):
         logger.info("Got priv {msg}".format(msg=message))
+
+    def handle_nickname_already_in_use(self, message):
+        return {'action': 'nickname_already_in_use', 'data': ''}

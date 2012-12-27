@@ -59,7 +59,9 @@ class IrcBot:
                 # Join to servers
                 for channel in settings.CHANNELS:
                     self._send_to_server("JOIN {channel}".format(channel=channel))
-
+            elif response['action'] is 'nickname_already_in_use':
+                logger.error('Nickname already in use')
+                raise RuntimeError('Nickname already in use')
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:

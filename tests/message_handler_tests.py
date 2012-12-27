@@ -38,3 +38,8 @@ class MessageHandlerTests(unittest.TestCase):
         response = handler.handle(test_message)
         self.assertTrue(m_priv_msg.called)
 
+    def test_nickname_already_in_use(self):
+        test_message = ':servercentral.il.us.quakenet.org 433 * Waltsu :Nickname is already in use.'
+        handler = MessageHandler()
+        response = handler.handle(test_message)
+        self.assertEquals(response['action'], 'nickname_already_in_use')
