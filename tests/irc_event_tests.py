@@ -13,4 +13,7 @@ class IrcEventTests(unittest.TestCase):
 
     def test_send_to_channel(self):
         self.event.send_to_channel("Hello world") 
-        #self.assertEquals(self.event.to_server, "PRIVMSG #testserver :Hello world")
+        self.assertEquals(self.event.to_server, "PRIVMSG #testserver :Hello world")
+
+        self.event.send_to_channel("Hello world", "#other_channel")
+        self.assertEquals(self.event.to_server, "PRIVMSG #other_channel :Hello world")

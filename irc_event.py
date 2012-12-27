@@ -25,11 +25,13 @@ class IrcEvent():
 
     def send_to_channel(self, message_to_channel, channel = None):
         """
-        Sets to_server variable so, that ircbot sends message_to_channel to channel. If channel isn't set, message will be sent to the same channel 
+        Sets 'to_server' variable so, that ircbot sends 'message_to_channel' to channel. If channel isn't set, message will be sent to the same channel.
+        
+        Note, if calling this function twice within the same event, the first message will be overridden
         """
-        try:
-            channel = getattr(self._server_message, 'channel')
-            current_channel = self._server_message['channel']
-        except AttributeError:
+        current_channel = channel if channel else self.channel
+        if current_channel:
+            self.to_server = "PRIVMSG {channel} :{message}".format(channel = current_channel, message = message_to_channel)
+        else:
             logger.error("For some reason, server message didn't contain channel where to send the message")
         
