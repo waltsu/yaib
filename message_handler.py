@@ -12,12 +12,12 @@ class UnknowInputException(Exception):
 
 class MessageHandler():
     def __init__(self):
-        self._handlers = {'notice': self.handle_notice,
-                          'ping': self.handle_ping,
-                          'mode': self.handle_mode,
-                          'privmsg': self.handle_priv_msg,
-                          '376': self.handle_end_of_motd,
-                          '433': self.handle_nickname_already_in_use}
+        self._handlers = {'notice': self._handle_notice,
+                          'ping': self._handle_ping,
+                          'mode': self._handle_mode,
+                          'privmsg': self._handle_priv_msg,
+                          '376': self._handle_end_of_motd,
+                          '433': self._handle_nickname_already_in_use}
 
         self._script_modules = []
         for module in settings.SCRIPT_MODULES:
@@ -68,23 +68,23 @@ class MessageHandler():
             raise UnknowInputException
 
     # HANDLERS
-    def handle_notice(self, message):
+    def _handle_notice(self, message):
         logger.info("Got notice {notice}".format(notice=message['content']))
 
-    def handle_ping(self, message):
+    def _handle_ping(self, message):
         return_data = {}
         return_data['data'] = 'PONG :{ping}'.format(ping=message['content'])
         return_data['action'] = 'to_server'
         return return_data
 
-    def handle_mode(self, message):
+    def _handle_mode(self, message):
         pass
 
-    def handle_end_of_motd(self, message):
+    def _handle_end_of_motd(self, message):
         return {'action': 'logged_in', 'data': ''}
 
-    def handle_priv_msg(self, message):
+    def _handle_priv_msg(self, message):
         logger.info("Got priv {msg}".format(msg=message))
 
-    def handle_nickname_already_in_use(self, message):
+    def _handle_nickname_already_in_use(self, message):
         return {'action': 'nickname_already_in_use', 'data': ''}
