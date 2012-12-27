@@ -59,9 +59,6 @@ class IrcBot:
                 logger.error('Nickname already in use')
                 raise RuntimeError('Nickname already in use')
 
-        def react_to_server(data):
-            self._send_to_server(response['data'])
-
         message_handler = MessageHandler()
         event = message_handler.handle(response)
         if event:
