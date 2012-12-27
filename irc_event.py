@@ -6,9 +6,9 @@ logger.setLevel(logging.DEBUG)
 
 class IrcEvent():
     """
-    Class which handles communication between scripting modules and ircbot.
+    Class which contains information of current event.
     This class will be created with the information from message which fired this event.
-    IrcBot inspects the instance of this class to find out information what the script wants to do with server.
+    IrcBot inspects this event to find out information what the script wants to do with server.
 
     Class variables:
         to_server: data which will be sent to server. You can interact with ircserver with this variable.
@@ -16,8 +16,12 @@ class IrcEvent():
 
     def __init__(self, message):
         self.to_server = None
-
         self._server_message = message
+
+        self.content = message['content'] if message.has_key('content') else None
+        self.type = message['type'] if message.has_key('type') else None
+        self.channel = message['channel'] if message.has_key('channel') else None
+        self.server = message['server'] if message.has_key('server') else None
 
     def send_to_channel(self, message_to_channel, channel = None):
         """

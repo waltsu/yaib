@@ -7,6 +7,8 @@ logger.setLevel(logging.DEBUG)
 import re
 import settings
 
+from irc_event import IrcEvent
+
 class UnknowInputException(Exception):
     pass
 
@@ -37,9 +39,10 @@ class MessageHandler():
         """
         try:
             parsed_message = self._parse(raw_message)
-            message = parsed_message['type'].lower()
+            event = IrcEvent(parsed_message)
+            type = event.type.lower()
             try:
-                return self._handlers[message](parsed_message)
+                return self._handlers[type](parsed_message)
             except KeyError:
                 logger.info('{message} not implemented yet'.format(message=message))
         except UnknowInputException:
