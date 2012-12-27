@@ -17,13 +17,12 @@ class IrcBot:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, host, port, ircname):
-        """ Function thats connects bot to irc server """
+        """ Function that connects bot to irc server and starts listening events"""
         def login_to_server():
-            logger.info("Logging to server with username: {user}".format(user=self._ircname))
+            logger.info("Log in to server with username: {user}".format(user=self._ircname))
             self._send_to_server("NICK {nick}".format(nick=self._ircname))
             self._send_to_server("USER {nick} 8 * : Yet another Ircbot".format(nick=self._ircname))
 
-        logger.info("setting bot's ircname to {ircname}".format(ircname=ircname))
         self._ircname = ircname
         logger.info("connecting to %s:%s" % (host, port))
         self._socket.connect((host, port))
