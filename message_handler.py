@@ -25,6 +25,8 @@ class MessageHandler():
                           '433': self._handle_nickname_already_in_use}
 
         self._script_modules = []
+        self._event = None
+
         for module in settings.SCRIPT_MODULES:
             self._script_modules.append(__import__(module,fromlist=['']))
             
@@ -39,12 +41,13 @@ class MessageHandler():
         """
         try:
             parsed_message = self._parse(raw_message)
-            event = IrcEvent(parsed_message)
-            type = event.type.lower()
+            self._event = IrcEvent(parsed_message)
+            type = self._event.type.lower()
             try:
-                return self._handlers[type](parsed_message)
+                self._handlers[type]()
+                return self._event
             except KeyError:
-                logger.info('{message} not implemented yet'.format(message=message))
+                logger.info('{message} not implemented yet'.format(message=self._event.type))
         except UnknowInputException:
             logger.info('Got unknown input: {message}'.format(message=raw_message))
             return;
@@ -78,7 +81,7 @@ class MessageHandler():
                 callable_function = getattr(module,func)
                 if callable(callable_function):
                     try:
-                        callable_function(**kwargs)
+                        callable_function(self._event, **kwargs)
                     except Exception as e:
                         logger.error("Script {module} raised error: {error}".format(module=module, error=e))
                 else:
@@ -87,28 +90,24 @@ class MessageHandler():
                 logger.debug("Script module {module} doesn't have method {function}".format(module=module, function=func))
 
     # HANDLERS
-    def _handle_notice(self, message):
-        logger.info("Got notice {notice}".format(notice=message['content']))
+    def _handle_notice(self):
+        logger.info("Got notice {notice}".format(notice=self._event.content))
 
-    def _handle_ping(self, message):
-        return_data = {}
-        return_data['data'] = 'PONG :{ping}'.format(ping=message['content'])
-        return_data['action'] = 'to_server'
-        return return_data
+    def _handle_ping(self):
+        self._event.to_server = 'PONG :{ping}'.format(ping=self._event.content)
 
-    def _handle_mode(self, message):
+    def _handle_mode(self):
         pass
 
-    def _handle_end_of_motd(self, message):
-        return {'action': 'info', 'data': 'logged_in'}
+    def _handle_end_of_motd(self):
+        self._event.info = 'logged_in'
 
-    def _handle_priv_msg(self, message):
-        script_message = {'content': message['content'].strip()[1:], # Excluding the first ':' character
-                          'nick': message['server'].split('!')[0],
-                          'channel': message['channel']}
+    def _handle_priv_msg(self):
+        script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
+                          'nick': self._event.server.split('!')[0],
+                          'channel': self._event.channel}
         
-        logger.info("Got priv {msg}".format(msg=message))
         self._call_script_modules('on_priv_message', message=script_message)
 
-    def _handle_nickname_already_in_use(self, message):
-        return {'action': 'info', 'data': 'nickname_already_in_use'}
+    def _handle_nickname_already_in_use(self):
+        self._event.info = 'nickname_already_in_use' 

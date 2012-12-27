@@ -64,12 +64,13 @@ class IrcBot:
             self._send_to_server(response['data'])
 
         message_handler = MessageHandler()
-        response = message_handler.handle(response)
-        if response:
-            if response['action'] is 'to_server':
-                react_to_server(response['data'])
-            if response['action'] is 'info':
-                react_info(response['data']) 
+        event = message_handler.handle(response)
+        if event:
+            if event.info:
+                react_info(event.info)
+            if event.to_server:
+                self._send_to_server(event.to_server)
+            
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:

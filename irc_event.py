@@ -12,10 +12,17 @@ class IrcEvent():
 
     Class variables:
         to_server: data which will be sent to server. You can interact with ircserver with this variable.
+        info: Info to caller
+
+        content: Content of the message that caused this event
+        type: Type of the message that caused this event
+        channel: Channel of the message that caused this event
+        server: Server of the message that caused this event
     """
 
     def __init__(self, message):
         self.to_server = None
+        self.info = None
         self._server_message = message
 
         self.content = message['content'] if message.has_key('content') else None
