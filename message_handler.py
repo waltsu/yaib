@@ -100,7 +100,7 @@ class MessageHandler():
         return {'action': 'info', 'data': 'logged_in'}
 
     def _handle_priv_msg(self, message):
-        script_message = {'content': message['content'].strip(),
+        script_message = {'content': message['content'].strip()[1:], # Excluding the first ':' character
                           'nick': message['server'].split('!')[0],
                           'channel': message['channel']}
         

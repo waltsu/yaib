@@ -17,6 +17,7 @@ class IrcBot:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, host, port, ircname):
+        """ Function thats connects bot to irc server """
         def login_to_server():
             logger.info("Logging to server with username: {user}".format(user=self._ircname))
             self._send_to_server("NICK {nick}".format(nick=self._ircname))
