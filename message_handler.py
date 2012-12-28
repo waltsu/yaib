@@ -110,7 +110,7 @@ class MessageHandler():
         logger.info("Got notice {notice}".format(notice=self._event.content))
 
     def _handle_ping(self):
-        self._event.to_server = 'PONG :{ping}'.format(ping=self._event.content)
+        self._event.to_server = ['PONG :{ping}'.format(ping=self._event.content)]
 
     def _handle_mode(self):
         pass

@@ -11,7 +11,7 @@ class IrcEvent():
     IrcBot inspects this event to find out information what the script wants to do with server.
 
     Class variables:
-        to_server: data which will be sent to server. You can interact with ircserver with this variable.
+        to_server: list which contains messages to be sent to server
         info: Info to caller
 
         content: Content of the message that caused this event
@@ -21,7 +21,7 @@ class IrcEvent():
     """
 
     def __init__(self, message):
-        self.to_server = None
+        self.to_server = []
         self.info = None
         self._server_message = message
 
@@ -32,13 +32,12 @@ class IrcEvent():
 
     def send_to_channel(self, message_to_channel, channel = None):
         """
-        Sets 'to_server' variable so, that ircbot sends 'message_to_channel' to channel. If channel isn't set, message will be sent to the same channel.
-        
-        Note, if calling this function twice within the same event, the first message will be overridden
+        Adds message_to_channel to 'to_server' list. 
+        If channel isn't set, same channel is used that caused this event
         """
         current_channel = channel if channel else self.channel
         if current_channel:
-            self.to_server = "PRIVMSG {channel} :{message}".format(channel = current_channel, message = message_to_channel)
+            self.to_server.append("PRIVMSG {channel} :{message}".format(channel = current_channel, message = message_to_channel))
         else:
             logger.error("For some reason, server message didn't contain channel where to send the message")
         

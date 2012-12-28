@@ -19,7 +19,7 @@ class MessageHandlerTests(unittest.TestCase):
         handler = MessageHandler()
         test_message = 'PING :687010916'
         event = handler.handle(test_message)
-        self.assertEqual(event.to_server, 'PONG :687010916')
+        self.assertEqual(event.to_server, ['PONG :687010916'])
 
     @patch.object(MessageHandler, '_handle_mode')
     def test_message_without_content(self, m_mode):

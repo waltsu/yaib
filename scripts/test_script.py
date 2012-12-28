@@ -4,7 +4,8 @@ def on_priv_message(event, message):
     event.send_to_channel(msg_to_server)
 
 def on_join(event, message):
-    print "on join: {message}".format(message=message)
+    event.send_to_channel("{nick} joined to channel".format(nick=message['nick']))
+    event.send_to_channel("Hello {nick}!".format(nick=message['nick']))
 
 def on_part(event, message):
     print "on part: {message}".format(message=message)
