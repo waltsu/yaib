@@ -29,15 +29,3 @@ class IrcEvent():
         self.type = message['type'] if message.has_key('type') else None
         self.target = message['target'] if message.has_key('target') else None
         self.server = message['server'] if message.has_key('server') else None
-
-    def send_to_channel(self, message_to_channel, channel = None):
-        """
-        Sends message_to_channel text to channel
-        If channel isn't set, same channel is used that caused this event
-        """
-        current_channel = channel if channel else self.target
-        if current_channel:
-            self.to_server.append("PRIVMSG {channel} :{message}".format(channel = current_channel, message = message_to_channel))
-        else:
-            logger.error("For some reason, server message didn't contain channel where to send the message")
-        

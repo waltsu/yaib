@@ -68,8 +68,8 @@ class IrcBot:
             if event.info:
                 react_info(event.info)
             if event.to_server:
-                for server_data in event.to_server:
-                    self._send_to_server(server_data)
+                for irc_message in event.to_server:
+                    self._send_to_server(irc_message.get_command())
             
 if __name__ == '__main__':
     ircbot = IrcBot()

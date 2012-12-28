@@ -23,3 +23,10 @@ class PrivateMessage(BaseMessage):
 
     def get_command(self):
         return "PRIVMSG {channel} :{message}".format(channel = self._channel, message = self._message)
+
+class PongMessage(BaseMessage):
+    def __init__(self, ping_id):
+        self._ping_id = ping_id
+
+    def get_command(self):
+        return "PONG :{ping_id}".format(ping_id = self._ping_id)

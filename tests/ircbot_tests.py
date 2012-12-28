@@ -7,6 +7,7 @@ from mock import call
 from ircbot import IrcBot
 from message_handler import MessageHandler
 from irc_event import IrcEvent
+from irc_messages import PongMessage
 
 class IrcbotTest(unittest.TestCase):
 
@@ -33,12 +34,10 @@ class IrcbotTest(unittest.TestCase):
     def test_to_server_handling(self, m_handle, m_send_to_server):
         def handle_se(response):
            event = IrcEvent({})
-           event.to_server = ["Something to server", "Something more"]
+           event.to_server = [PongMessage(1234)]
            return event
            
         m_handle.side_effect = handle_se
         self._ircbot._handle_server_response("")
-        call_args = m_send_to_server.mock_calls
-        self.assertTrue(call('Something to server') in call_args) 
-        self.assertTrue(call('Something more') in call_args) 
+        m_send_to_server.assert_called_with("PONG :1234")
 

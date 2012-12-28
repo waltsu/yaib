@@ -4,6 +4,7 @@ from mock import patch
 
 from yaib.message_handler import MessageHandler
 from yaib.irc_event import IrcEvent
+from irc_messages import PongMessage
 
 from scripts import test_script
 
@@ -19,7 +20,7 @@ class MessageHandlerTests(unittest.TestCase):
         handler = MessageHandler()
         test_message = 'PING :687010916'
         event = handler.handle(test_message)
-        self.assertEqual(event.to_server, ['PONG :687010916'])
+        self.assertEqual(event.to_server[0].get_command(), PongMessage(687010916).get_command())
 
     @patch.object(MessageHandler, '_handle_mode')
     def test_message_without_content(self, m_mode):
