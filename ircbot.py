@@ -50,6 +50,9 @@ class IrcBot:
         logger.debug("Sent data: {data}".format(data=data))
 
     def _handle_server_response(self, response):
+        """
+        Handles server response. Passes raw response from server to MessageHandler and except that MessageHandler.handle returns instance of IrcEvent class, so ircbot knows what to do next with the event.
+        """
         def react_info(data):
             if data is 'logged_in':
                 # Join to servers

@@ -50,6 +50,9 @@ class MessageHandler():
             return;
 
     def _parse(self, message):
+        """
+        Parses raw message to dictionary.
+        """
         logger.debug("Parsing message: {message}".format(message=message))
         if message.startswith(':'):
             pattern = re.compile(':(.+?)\s(.+?)\s(.+?)\s(.*)')
@@ -73,6 +76,22 @@ class MessageHandler():
             raise UnknowInputException
 
     def _call_script_modules(self, func, **kwargs):
+        """
+        Calls 'func'-function from every script_module if possible. The first parameter of function call is self._event and other parameters are passed from **kwargs.
+        Example:
+        If this function is called with:
+
+            _call_script_modules('on_join', nick='nick', channel='#channel')
+
+        Then each script_module's function on_join will be called with:
+            script_module.on_join(self._event, nick='nick', channel='#channel')
+
+        So scriptmodule should have following function:
+            def on_join(event, nick, channel):
+                pass
+
+        If module doesn't have the function (which is highly possible and expected), error will be logged to logger.debug
+        """
         for module in self._script_modules:
             try:
                 callable_function = getattr(module,func)
