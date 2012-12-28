@@ -22,6 +22,12 @@ class IrcbotTest(unittest.TestCase):
         self.assertTrue(m_connect.called)
         self.assertTrue(m_response_loop.called)
 
+    @patch.object(socket, 'sendall')
+    def test_send_to_server(self, m_sendall):
+        self._ircbot._send_to_server('something to server')
+
+        m_sendall.assert_called_with('something to server\r\n')
+
     @patch.object(IrcBot, '_send_to_server') 
     @patch.object(MessageHandler, 'handle')
     def test_to_server_handling(self, m_handle, m_send_to_server):
