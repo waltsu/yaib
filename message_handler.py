@@ -83,7 +83,7 @@ class MessageHandler():
 
             _call_script_modules('on_join', nick='nick', channel='#channel')
 
-        Then each script_module's function on_join will be called with:
+        Then on_join function of every script_module will be called with:
             script_module.on_join(self._event, nick='nick', channel='#channel')
 
         So scriptmodule should have following function:
