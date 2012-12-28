@@ -21,6 +21,8 @@ class MessageHandler():
                           'ping': self._handle_ping,
                           'mode': self._handle_mode,
                           'privmsg': self._handle_priv_msg,
+                          'join': self._handle_join,
+                          'part': self._handle_part,
                           '376': self._handle_end_of_motd,
                           '433': self._handle_nickname_already_in_use}
 
@@ -29,7 +31,6 @@ class MessageHandler():
 
         for module in settings.SCRIPT_MODULES:
             self._script_modules.append(__import__(module,fromlist=['']))
-            
 
     def handle(self, raw_message):
         """
@@ -104,6 +105,18 @@ class MessageHandler():
                           'channel': self._event.channel}
         
         self._call_script_modules('on_priv_message', message=script_message)
+
+    def _handle_join(self):
+        script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
+                          'nick': self._event.server.split('!')[0],
+                          'channel': self._event.channel}
+        self._call_script_modules('on_join', message=script_message)
+
+    def _handle_part(self):
+        script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
+                          'nick': self._event.server.split('!')[0],
+                          'channel': self._event.channel}
+        self._call_script_modules('on_part', message=script_message)
 
     def _handle_nickname_already_in_use(self):
         self._event.info = 'nickname_already_in_use' 
