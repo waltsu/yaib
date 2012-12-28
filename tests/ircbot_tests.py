@@ -7,4 +7,4 @@ class IrcbotTest(unittest.TestCase):
         self._ircbot = IrcBot()
 
     def test_connecting(self):
-        assertIsNotNone(self._ircbot)
+        self.assertTrue(self._ircbot != None)

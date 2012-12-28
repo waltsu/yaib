@@ -10,6 +10,7 @@ from scripts import test_script
 class MessageHandlerTests(unittest.TestCase):
     @patch.object(MessageHandler, "_handle_notice")
     def test_notice_parsing(self, m_notice):
+        handler = MessageHandler()
         test_message = ':servercentral.il.us.quakenet.org NOTICE yaib :on 1 ca 1(4) ft 20(20)'
         handler.handle(test_message)
         self.assertTrue(m_notice.called)
