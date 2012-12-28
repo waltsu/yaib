@@ -1,7 +1,15 @@
+import settings
+
 def on_priv_message(event, message):
-    print "Repeating the message."
     msg_to_server = "{user} said: {content}".format(user=message['nick'], content=message['content'])
-    event.send_to_channel(msg_to_server)
+    print "Repeating the message."
+
+    # If user sends privat message to the bot, channel is our bot
+    # We want to answer back to the nick, not to us
+    if message['channel'] == settings.IRCNAME:
+        event.send_to_channel(msg_to_server, message['nick'])
+    else:
+        event.send_to_channel(msg_to_server)
 
 def on_join(event, message):
     event.send_to_channel("{nick} joined to channel".format(nick=message['nick']))
