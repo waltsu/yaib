@@ -17,11 +17,19 @@ class IrcBot:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, host, port, ircname):
-        logger.info("setting bot's ircname to {ircname}".format(ircname=ircname))
+        """ Function that connects bot to irc server and starts listening events"""
+        def login_to_server():
+            logger.info("Log in to server with username: {user}".format(user=self._ircname))
+            self._send_to_server("NICK {nick}".format(nick=self._ircname))
+            self._send_to_server("USER {nick} 8 * : Yet another Ircbot".format(nick=self._ircname))
+
         self._ircname = ircname
         logger.info("connecting to %s:%s" % (host, port))
         self._socket.connect((host, port))
         logger.info("connected")
+
+        login_to_server()
+
         self._response_loop()
 
     def _response_loop(self):
@@ -37,11 +45,28 @@ class IrcBot:
             handle_thread = threading.Thread(target=functools.partial(self._handle_server_response, server_response))
             handle_thread.start()
 
+    def _send_to_server(self, data):
+        self._socket.sendall(data + '\r\n')
+        logger.debug("Sent data: {data}".format(data=data))
+
     def _handle_server_response(self, response):
+        def react_info(data):
+            if data is 'logged_in':
+                # Join to servers
+                for channel in settings.CHANNELS:
+                    self._send_to_server("JOIN {channel}".format(channel=channel))
+            elif data is 'nickname_already_in_use':
+                logger.error('Nickname already in use')
+                raise RuntimeError('Nickname already in use')
+
         message_handler = MessageHandler()
-        message_handler.handle(response)
-
-
+        event = message_handler.handle(response)
+        if event:
+            if event.info:
+                react_info(event.info)
+            if event.to_server:
+                self._send_to_server(event.to_server)
+            
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:
