@@ -65,7 +65,7 @@ class MessageHandler():
             if len(result.groups()) == 4:
                 parsed_message['server'] = result.group(1)
                 parsed_message['type'] = result.group(2)
-                parsed_message['channel'] = result.group(3)
+                parsed_message['target'] = result.group(3)
                 parsed_message['content'] = result.group(4)
             else:
                 parsed_message['type'] = result.group(1)
@@ -121,20 +121,20 @@ class MessageHandler():
     def _handle_priv_msg(self):
         script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
                           'nick': self._event.server.split('!')[0],
-                          'channel': self._event.channel}
+                          'target': self._event.target}
         
         self._call_script_modules('on_priv_message', message=script_message)
 
     def _handle_join(self):
         script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
                           'nick': self._event.server.split('!')[0],
-                          'channel': self._event.channel}
+                          'target': self._event.target}
         self._call_script_modules('on_join', message=script_message)
 
     def _handle_part(self):
         script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
                           'nick': self._event.server.split('!')[0],
-                          'channel': self._event.channel}
+                          'target': self._event.target}
         self._call_script_modules('on_part', message=script_message)
 
     def _handle_nickname_already_in_use(self):

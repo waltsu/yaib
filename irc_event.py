@@ -16,7 +16,7 @@ class IrcEvent():
 
         content: Content of the message that caused this event
         type: Type of the message that caused this event
-        channel: Channel of the message that caused this event
+        target: Target of the message that caused this event. For example channel or nick.
         server: Server of the message that caused this event
     """
 
@@ -27,15 +27,15 @@ class IrcEvent():
 
         self.content = message['content'] if message.has_key('content') else None
         self.type = message['type'] if message.has_key('type') else None
-        self.channel = message['channel'] if message.has_key('channel') else None
+        self.target = message['target'] if message.has_key('target') else None
         self.server = message['server'] if message.has_key('server') else None
 
     def send_to_channel(self, message_to_channel, channel = None):
         """
-        Adds message_to_channel to 'to_server' list. 
+        Adds message_to_channel in correct form to 'to_server' list so it will be sent to channel.
         If channel isn't set, same channel is used that caused this event
         """
-        current_channel = channel if channel else self.channel
+        current_channel = channel if channel else self.target
         if current_channel:
             self.to_server.append("PRIVMSG {channel} :{message}".format(channel = current_channel, message = message_to_channel))
         else:

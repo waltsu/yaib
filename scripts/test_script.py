@@ -4,9 +4,9 @@ def on_priv_message(event, message):
     msg_to_server = "{user} said: {content}".format(user=message['nick'], content=message['content'])
     print "Repeating the message."
 
-    # If user sends privat message to the bot, channel is our bot
+    # If user sends privat message to the bot, target is our bot
     # We want to answer back to the nick, not to us
-    if message['channel'] == settings.IRCNAME:
+    if message['target'] == settings.IRCNAME:
         event.send_to_channel(msg_to_server, message['nick'])
     else:
         event.send_to_channel(msg_to_server)
