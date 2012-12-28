@@ -47,6 +47,20 @@ class MessageHandlerTests(unittest.TestCase):
         event = handler.handle(test_message)
         self.assertEquals(event.info, 'nickname_already_in_use')
 
+    @patch.object(test_script, 'on_join') 
+    def test_on_join(self, m_on_join):
+        handler = MessageHandler()
+        test_message = ':Waltsu!vavirta@linux.utu.fi JOIN #secondtest '
+        event = handler.handle(test_message)
+        self.assertTrue(m_on_join.called)
+
+    @patch.object(test_script, 'on_part')
+    def test_on_part(self, m_on_part):
+        test_message = ':Waltsu!vavirta@linux.utu.fi PART #secondtest '
+        handler = MessageHandler()
+        event = handler.handle(test_message)
+        self.assertTrue(m_on_part.called)
+
     @patch.object(test_script, 'on_priv_message')
     def test_script_calling(self, m_on_priv_message):
         handler = MessageHandler()
