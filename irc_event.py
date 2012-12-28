@@ -32,7 +32,7 @@ class IrcEvent():
 
     def send_to_channel(self, message_to_channel, channel = None):
         """
-        Adds message_to_channel in correct form to 'to_server' list so it will be sent to channel.
+        Sends message_to_channel text to channel
         If channel isn't set, same channel is used that caused this event
         """
         current_channel = channel if channel else self.target
