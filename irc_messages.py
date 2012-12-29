@@ -74,4 +74,4 @@ class ModeMessage(BaseMessage):
         command = 'MODE {channel} {flag}'.format(channel=self._channel, flag=self._flag)
         if self._target:
             command += ' {target}'.format(target=self._target)
-        return command 
+        return command

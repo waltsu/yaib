@@ -32,8 +32,8 @@ class MessageHandlerTests(unittest.TestCase):
     def test_end_of_motd(self):
         test_message = ':servercentral.il.us.quakenet.org 376 yaib :End of /MOTD command.'
         handler = MessageHandler()
-        event = response = handler.handle(test_message)
-        self.assertEquals(event.info, 'logged_in')
+        event = handler.handle(test_message)
+        self.assertEquals(event.to_server[0].get_command(), "JOIN #testserver")
 
     @patch.object(MessageHandler, '_handle_priv_msg')
     def test_privmsg(self, m_priv_msg):
@@ -45,8 +45,8 @@ class MessageHandlerTests(unittest.TestCase):
     def test_nickname_already_in_use(self):
         test_message = ':servercentral.il.us.quakenet.org 433 * Waltsu :Nickname is already in use.'
         handler = MessageHandler()
-        event = handler.handle(test_message)
-        self.assertEquals(event.info, 'nickname_already_in_use')
+        with self.assertRaises(RuntimeError):
+            event = handler.handle(test_message)
 
     @patch.object(test_script, 'on_join') 
     def test_on_join(self, m_on_join):

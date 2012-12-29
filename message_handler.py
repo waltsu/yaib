@@ -8,7 +8,7 @@ import re
 import settings
 
 from irc_event import IrcEvent
-from irc_messages import PongMessage
+from irc_messages import *
 
 class UnknowInputException(Exception):
     pass
@@ -117,13 +117,14 @@ class MessageHandler():
         pass
 
     def _handle_end_of_motd(self):
-        self._event.info = 'logged_in'
+        for channel in settings.CHANNELS:
+            self._event.to_server.append(JoinMessage(channel))
 
     def _handle_priv_msg(self):
         script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
                           'nick': self._event.server.split('!')[0],
                           'target': self._event.target}
-        
+
         self._call_script_modules('on_priv_message', message=script_message)
 
     def _handle_join(self):
@@ -137,4 +138,5 @@ class MessageHandler():
         self._call_script_modules('on_part', message=script_message)
 
     def _handle_nickname_already_in_use(self):
-        self._event.info = 'nickname_already_in_use' 
+        logger.error('Nickname already in use')
+        raise RuntimeError('Nickname already in use')

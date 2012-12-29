@@ -54,24 +54,12 @@ class IrcBot:
         """
         Handles server response. Passes raw response from server to MessageHandler and except that MessageHandler.handle returns instance of IrcEvent class, so ircbot knows what to do next with the event.
         """
-        def react_info(data):
-            if data is 'logged_in':
-                # Join to servers
-                for channel in settings.CHANNELS:
-                    self._send_to_server(JoinMessage(channel).get_command())
-            elif data is 'nickname_already_in_use':
-                logger.error('Nickname already in use')
-                raise RuntimeError('Nickname already in use')
-
         message_handler = MessageHandler()
         event = message_handler.handle(response)
-        if event:
-            if event.info:
-                react_info(event.info)
-            if event.to_server:
-                for irc_message in event.to_server:
-                    self._send_to_server(irc_message.get_command())
-            
+        if event.to_server:
+            for irc_message in event.to_server:
+                self._send_to_server(irc_message.get_command())
+
 if __name__ == '__main__':
     ircbot = IrcBot()
     try:

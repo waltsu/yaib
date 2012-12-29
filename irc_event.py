@@ -12,7 +12,6 @@ class IrcEvent():
 
     Class variables:
         to_server: list which contains messages to be sent to server
-        info: Info to caller
 
         content: Content of the message that caused this event
         type: Type of the message that caused this event
@@ -22,7 +21,6 @@ class IrcEvent():
 
     def __init__(self, message):
         self.to_server = []
-        self.info = None
         self._server_message = message
 
         self.content = message['content'] if message.has_key('content') else None
