@@ -56,7 +56,7 @@ class IrcBot:
         """
         message_handler = MessageHandler()
         event = message_handler.handle(response)
-        if event.to_server:
+        if event and event.to_server:
             for irc_message in event.to_server:
                 self._send_to_server(irc_message.get_command())
 
