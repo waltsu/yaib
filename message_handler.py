@@ -24,6 +24,7 @@ class MessageHandler():
                           'privmsg': self._handle_priv_msg,
                           'join': self._handle_join,
                           'part': self._handle_part,
+                          'topic': self._handle_topic,
                           '376': self._handle_end_of_motd,
                           '433': self._handle_nickname_already_in_use}
 
@@ -142,6 +143,9 @@ class MessageHandler():
         script_message = {'nick': self._event.server.split('!')[0],
                           'channel': self._event.target}
         self._call_script_modules('on_part', message=script_message)
+
+    def _handle_topic(self):
+        logger.debug("Topic changed")
 
     def _handle_nickname_already_in_use(self):
         logger.error('Nickname already in use')

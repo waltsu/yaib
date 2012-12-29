@@ -22,3 +22,10 @@ class IrcMessagesTests(unittest.TestCase):
 
         mode_message_with_target = ModeMessage('#channel', '+o', 'yaib')
         self.assertEquals(mode_message_with_target.get_command(), 'MODE #channel +o yaib')
+
+    def test_topic_message(self):
+        topic_message = TopicMessage('#channel')
+        self.assertEquals(topic_message.get_command(), 'TOPIC #channel')
+
+        topic_message_with_message = TopicMessage('#channel', 'another topic')
+        self.assertEquals(topic_message_with_message.get_command(), 'TOPIC #channel :another topic')

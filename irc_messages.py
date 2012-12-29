@@ -75,3 +75,23 @@ class ModeMessage(BaseMessage):
         if self._target:
             command += ' {target}'.format(target=self._target)
         return command
+
+class TopicMessage(BaseMessage):
+    """
+    TOPIC message
+
+    Example from server:
+    :Waltsu!waltsu@example.com TOPIC #testserver :Setting new topic
+
+    Example to server:
+    TOPIC #testserver :another topic
+    """
+    def __init__(self, channel, message = None):
+        self._channel = channel
+        self._message = message
+
+    def get_command(self):
+        command = 'TOPIC {channel}'.format(channel=self._channel)
+        if self._message:
+            command += ' :{message}'.format(message=self._message)
+        return command

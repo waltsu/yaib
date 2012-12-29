@@ -9,7 +9,7 @@ from irc_messages import PongMessage
 from tests.fixtures import script
 
 class MessageHandlerTests(unittest.TestCase):
-    PART_MESSAGE = ':Waltsu!vavirta@linux.utu.fi PART #secondtest '
+    PART_MESSAGE = ':Waltsu!waltsu@example.com PART #secondtest '
     @patch.object(MessageHandler, "_handle_notice")
     def test_notice_parsing(self, m_notice):
         handler = MessageHandler()
@@ -38,7 +38,7 @@ class MessageHandlerTests(unittest.TestCase):
 
     @patch.object(MessageHandler, '_handle_priv_msg')
     def test_privmsg(self, m_priv_msg):
-        test_message = ':Waltsu!vavirta@linux.utu.fi PRIVMSG #testserver :uujee'
+        test_message = ':Waltsu!waltsu@example.com PRIVMSG #testserver :uujee'
         handler = MessageHandler()
         response = handler.handle(test_message)
         self.assertTrue(m_priv_msg.called)
@@ -54,7 +54,7 @@ class MessageHandlerTests(unittest.TestCase):
         handler = MessageHandler()
         handler.add_script_module("tests.fixtures.script")
 
-        test_message = ':Waltsu!vavirta@linux.utu.fi JOIN #secondtest '
+        test_message = ':Waltsu!waltsu@example.com JOIN #secondtest '
         event = handler.handle(test_message)
 
         self.assertTrue(m_on_join.called)
@@ -78,6 +78,13 @@ class MessageHandlerTests(unittest.TestCase):
         handler._call_script_modules('on_priv_message', message="some message")
 
         m_on_priv_message.assert_called_with(mock_event, message="some message")
+
+    @patch.object(MessageHandler, '_handle_topic')
+    def test_on_topic(self, m_handle_topic):
+        test_message = ':Waltsu!waltsu@example.com TOPIC #secondtest :a'
+        handler = MessageHandler()
+        event = handler.handle(test_message)
+        self.assertTrue(m_handle_topic.called)
 
     @patch.object(script, 'on_part')
     def test_script_error_handling(self, m_on_part):
