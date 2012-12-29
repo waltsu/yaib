@@ -31,7 +31,13 @@ class MessageHandler():
         self._event = None
 
         for module in settings.SCRIPT_MODULES:
-            self._script_modules.append(__import__(module,fromlist=['']))
+            self.add_script_module(module)
+
+    def add_script_module(self, module):
+        """
+        Register a script module to be used
+        """
+        self._script_modules.append(__import__(module, fromlist=['']))
 
     def handle(self, raw_message):
         """

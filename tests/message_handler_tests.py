@@ -6,9 +6,10 @@ from yaib.message_handler import MessageHandler
 from yaib.irc_event import IrcEvent
 from irc_messages import PongMessage
 
-from scripts import test_script
+from tests.fixtures import script
 
 class MessageHandlerTests(unittest.TestCase):
+    PART_MESSAGE = ':Waltsu!vavirta@linux.utu.fi PART #secondtest '
     @patch.object(MessageHandler, "_handle_notice")
     def test_notice_parsing(self, m_notice):
         handler = MessageHandler()
@@ -48,29 +49,42 @@ class MessageHandlerTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             event = handler.handle(test_message)
 
-    @patch.object(test_script, 'on_join') 
+    @patch.object(script, 'on_join')
     def test_on_join(self, m_on_join):
         handler = MessageHandler()
+        handler.add_script_module("tests.fixtures.script")
+
         test_message = ':Waltsu!vavirta@linux.utu.fi JOIN #secondtest '
         event = handler.handle(test_message)
+
         self.assertTrue(m_on_join.called)
 
-    @patch.object(test_script, 'on_part')
+    @patch.object(script, 'on_part')
     def test_on_part(self, m_on_part):
-        test_message = ':Waltsu!vavirta@linux.utu.fi PART #secondtest '
         handler = MessageHandler()
-        event = handler.handle(test_message)
+        handler.add_script_module("tests.fixtures.script")
+
+        event = handler.handle(self.PART_MESSAGE)
+
         self.assertTrue(m_on_part.called)
 
-    @patch.object(test_script, 'on_priv_message')
+    @patch.object(script, 'on_priv_message')
     def test_script_calling(self, m_on_priv_message):
         handler = MessageHandler()
+        handler.add_script_module("tests.fixtures.script")
+
         mock_event = IrcEvent({'content': 'some content', 'channel': '#channel', 'type': 'privmsg'})
         handler._event = mock_event
         handler._call_script_modules('on_priv_message', message="some message")
+
         m_on_priv_message.assert_called_with(mock_event, message="some message")
 
-    def test_script_error_handling(self):
+    @patch.object(script, 'on_part')
+    def test_script_error_handling(self, m_on_part):
+        m_on_part.side_effect = Exception("Should not bubble from handler")
+
         handler = MessageHandler()
-        # If not handled correctly, raise_error will raise exception
-        handler._call_script_modules('raise_error', message="some message")
+        handler.add_script_module("tests.fixtures.script")
+
+        event = handler.handle(self.PART_MESSAGE)
+        self.assertTrue(m_on_part.called)
