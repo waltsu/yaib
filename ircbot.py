@@ -6,6 +6,7 @@ import socket
 import threading
 import functools
 from message_handler import MessageHandler
+from irc_messages import JoinMessage
 
 import logging
 logging.basicConfig()
@@ -57,7 +58,7 @@ class IrcBot:
             if data is 'logged_in':
                 # Join to servers
                 for channel in settings.CHANNELS:
-                    self._send_to_server("JOIN {channel}".format(channel=channel))
+                    self._send_to_server(JoinMessage(channel).get_command())
             elif data is 'nickname_already_in_use':
                 logger.error('Nickname already in use')
                 raise RuntimeError('Nickname already in use')
