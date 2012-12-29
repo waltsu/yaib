@@ -1,6 +1,6 @@
 import settings
 
-from irc_messages import PrivateMessage
+from irc_messages import PrivateMessage, ModeMessage
 
 def on_priv_message(event, message):
     msg_to_server = "{user} said: {content}".format(user=message['nick'], content=message['content'])
@@ -14,8 +14,9 @@ def on_priv_message(event, message):
         event.to_server.append(PrivateMessage(message['target'], msg_to_server))
 
 def on_join(event, message):
-    event.to_server.append(PrivateMessage(message['target'], "{nick} joined to channel".format(nick=message['nick'])))
-    event.to_server.append(PrivateMessage(message['target'], "Hello {nick}!".format(nick=message['nick'])))
+    event.to_server.append(PrivateMessage(message['channel'], "Hello {nick}!".format(nick=message['nick'])))
+    event.to_server.append(PrivateMessage(message['channel'], "Trying to give op for you :)".format(nick=message['nick'])))
+    event.to_server.append(ModeMessage(message['channel'], '+o', message['nick']))
 
 def on_part(event, message):
     print "on part: {message}".format(message=message)

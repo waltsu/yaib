@@ -127,15 +127,13 @@ class MessageHandler():
         self._call_script_modules('on_priv_message', message=script_message)
 
     def _handle_join(self):
-        script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
-                          'nick': self._event.server.split('!')[0],
-                          'target': self._event.target}
+        script_message = {'nick': self._event.server.split('!')[0],
+                          'channel': self._event.target}
         self._call_script_modules('on_join', message=script_message)
 
     def _handle_part(self):
-        script_message = {'content': self._event.content.strip()[1:], # Excluding the first ':' character
-                          'nick': self._event.server.split('!')[0],
-                          'target': self._event.target}
+        script_message = {'nick': self._event.server.split('!')[0],
+                          'channel': self._event.target}
         self._call_script_modules('on_part', message=script_message)
 
     def _handle_nickname_already_in_use(self):
