@@ -78,6 +78,8 @@ class ModeMessage(BaseMessage):
 
 class TopicMessage(BaseMessage):
     """
+    TOPIC message
+
     Example from server:
     :Waltsu!waltsu@example.com TOPIC #testserver :Setting new topic
 
