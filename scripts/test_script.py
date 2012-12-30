@@ -20,10 +20,3 @@ def on_join(event, message):
 
 def on_part(event, message):
     print "on part: {message}".format(message=message)
-
-def raise_error(event, message):
-    """
-    Function for testing error handling on script system
-    """
-    print "Raising type error"
-    raise TypeError("Caller should handle this!")
