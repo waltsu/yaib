@@ -46,8 +46,7 @@ class MessageHandlerTests(unittest.TestCase):
     def test_nickname_already_in_use(self):
         test_message = ':servercentral.il.us.quakenet.org 433 * Waltsu :Nickname is already in use.'
         handler = MessageHandler()
-        with self.assertRaises(RuntimeError):
-            event = handler.handle(test_message)
+        self.assertRaises(RuntimeError, handler.handle, test_message)
 
     @patch.object(script, 'on_join')
     def test_on_join(self, m_on_join):
